@@ -290,7 +290,7 @@ def get_html_template():
     <section class="hero" id="home">
         <div class="container">
             <h1 class="glitch">CYFOX</h1>
-            <p>ELITE CYBERSECURITY COLLECTIVE</p>
+            <p>ELITE CYBERSECURITY COLLECTIVE CLUB</p>
             <button class="cta-button" onclick="document.getElementById('join').scrollIntoView({behavior: 'smooth'})">
                 HACK THE FUTURE
             </button>
@@ -305,11 +305,7 @@ def get_html_template():
             </p>
 
             <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🛡️</div>
-                    <h3>Cyber Defense</h3>
-                    <p>Master the art of digital fortification and threat mitigation.</p>
-                </div>
+                
 
                 <div class="feature-card">
                     <div class="feature-icon">🔍</div>
@@ -338,32 +334,32 @@ def get_html_template():
             <div class="team-slider-container">
                 <div class="team-slider">
                     <div class="team-card">
-                        <img src="static/WhatsApp Image 2025-09-06 at 14.12.44_605c0690.jpg" alt="Team Member 1">
+                        <img src="static\m.jpg" alt="Team Member 1">
                         <h3>PRANAY AGRAWAL</h3>
                         <p>Founder & Lead Architect</p>
                     </div>
                     <div class="team-card">
-                        <img src="/static/WhatsApp Image 2025-09-06 at 14.12.44_605c0690.jpg" alt="Team Member 2">
+                        <img src="static\m.jpg" alt="Team Member 1">
                         <h3>PRANAY AGRAWAL</h3>
                         <p>Head of Pentesting</p>
                     </div>
                     <div class="team-card">
-                        <img src="static/WhatsApp Image 2025-09-06 at 14.12.44_605c0690.jpg" alt="Team Member 3">
+                        <img src="static\m.jpg" alt="Team Member 1">
                         <h3>PRANAY AGRAWAL</h3>
                         <p>AI Security Specialist</p>
                     </div>
                     <div class="team-card">
-                        <img src="static/WhatsApp Image 2025-09-06 at 14.12.44_605c0690.jpg" alt="Team Member 4">
+                        <img src="static\m.jpg" alt="Team Member 1">
                         <h3>PRANAY AGRAWAL</h3>
                         <p>Network Security and Forensics Expert</p>
                     </div>
                     <div class="team-card">
-                        <img src="static/WhatsApp Image 2025-09-06 at 14.12.44_605c0690.jpg" alt="Team Member 5">
+                        <img src="static\m.jpg" alt="Team Member 1">
                         <h3>PRANAY AGRAWAL</h3>
                         <p>Malware Analyst</p>
                     </div>
                     <div class="team-card">
-                        <img src="static/WhatsApp Image 2025-09-06 at 14.12.44_605c0690.jpg" alt="Team Member 6">
+                        <img src="static\m.jpg" alt="Team Member 1">
                         <h3>PRANAY AGRAWAL</h3>
                         <p>Threat Intelligence Lead</p>
                     </div>
@@ -423,4 +419,3 @@ def get_html_template():
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
-
