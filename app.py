@@ -359,7 +359,7 @@ def get_html_template():
                         <p>Malware Analyst</p>
                     </div>
                     <div class="team-card">
-                        <img src="static\AKSHAY.jpg" alt="Team Member 1">
+                        <img src="static\akshay.jpg" alt="Team Member 1">
                         <h3>AKSHAY</h3>
                         <p>Threat Intelligence Lead</p>
                     </div>
@@ -419,3 +419,4 @@ def get_html_template():
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
+
