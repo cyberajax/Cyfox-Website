@@ -334,33 +334,33 @@ def get_html_template():
             <div class="team-slider-container">
                 <div class="team-slider">
                     <div class="team-card">
-                        <img src="static\m.jpg" alt="Team Member 1">
-                        <h3>PRANAY AGRAWAL</h3>
-                        <p>Founder & Lead Architect</p>
+                        <img src="static\e.jpg" alt="Team Member 1">
+                        <h3>DIVYANSHU MAURYA</h3>
+                        <p>Founder Of CYFOX</p>
                     </div>
                     <div class="team-card">
-                        <img src="static\m.jpg" alt="Team Member 1">
-                        <h3>PRANAY AGRAWAL</h3>
-                        <p>Head of Pentesting</p>
-                    </div>
-                    <div class="team-card">
-                        <img src="static\m.jpg" alt="Team Member 1">
-                        <h3>PRANAY AGRAWAL</h3>
-                        <p>AI Security Specialist</p>
-                    </div>
-                    <div class="team-card">
-                        <img src="static\m.jpg" alt="Team Member 1">
+                        <img src="static\owner.jpg" alt="Team Member 1">
                         <h3>PRANAY AGRAWAL</h3>
                         <p>Network Security and Forensics Expert</p>
                     </div>
                     <div class="team-card">
-                        <img src="static\m.jpg" alt="Team Member 1">
-                        <h3>PRANAY AGRAWAL</h3>
+                        <img src="static\goyanka.jpg" alt="Team Member 1">
+                        <h3>ARPIT </h3>
+                        <p>AI Security Specialist</p>
+                    </div>
+                    <div class="team-card">
+                        <img src="static\c.jpg" alt="Team Member 1">
+                        <h3>TAPAN</h3>
+                        <p>AISE HI AAGYA KOI SKILL NHI HAI </p>
+                    </div>
+                    <div class="team-card">
+                        <img src="static\d.jpg" alt="Team Member 1">
+                        <h3>RITHIK</h3>
                         <p>Malware Analyst</p>
                     </div>
                     <div class="team-card">
-                        <img src="static\m.jpg" alt="Team Member 1">
-                        <h3>PRANAY AGRAWAL</h3>
+                        <img src="static\AKSHAY.jpg" alt="Team Member 1">
+                        <h3>AKSHAY</h3>
                         <p>Threat Intelligence Lead</p>
                     </div>
                 </div>
