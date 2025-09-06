@@ -338,33 +338,33 @@ def get_html_template():
             <div class="team-slider-container">
                 <div class="team-slider">
                     <div class="team-card">
-                        <img src="https://i.pravatar.cc/150?u=cyfox1" alt="Team Member 1">
-                        <h3>ZERO_COOL</h3>
+                        <img src="WhatsApp Image 2025-09-06 at 14.12.44_605c0690.jpg" alt="Team Member 1">
+                        <h3>PRANAY AGRAWAL</h3>
                         <p>Founder & Lead Architect</p>
                     </div>
                     <div class="team-card">
-                        <img src="https://i.pravatar.cc/150?u=cyfox2" alt="Team Member 2">
-                        <h3>ACID_BURN</h3>
+                        <img src="WhatsApp Image 2025-09-06 at 14.12.44_605c0690.jpg" alt="Team Member 2">
+                        <h3>PRANAY AGRAWAL</h3>
                         <p>Head of Pentesting</p>
                     </div>
                     <div class="team-card">
-                        <img src="https://i.pravatar.cc/150?u=cyfox3" alt="Team Member 3">
-                        <h3>NEO</h3>
+                        <img src="WhatsApp Image 2025-09-06 at 14.12.44_605c0690.jpg" alt="Team Member 3">
+                        <h3>PRANAY AGRAWAL</h3>
                         <p>AI Security Specialist</p>
                     </div>
                     <div class="team-card">
-                        <img src="https://i.pravatar.cc/150?u=cyfox4" alt="Team Member 1">
-                        <h3>TRINITY</h3>
+                        <img src="WhatsApp Image 2025-09-06 at 14.12.44_605c0690.jpg" alt="Team Member 4">
+                        <h3>PRANAY AGRAWAL</h3>
                         <p>Network Security and Forensics Expert</p>
                     </div>
                     <div class="team-card">
-                        <img src="https://i.pravatar.cc/150?u=cyfox5" alt="Team Member 5">
-                        <h3>GHOST</h3>
+                        <img src="WhatsApp Image 2025-09-06 at 14.12.44_605c0690.jpg" alt="Team Member 5">
+                        <h3>PRANAY AGRAWAL</h3>
                         <p>Malware Analyst</p>
                     </div>
                     <div class="team-card">
-                        <img src="https://i.pravatar.cc/150?u=cyfox6" alt="Team Member 6">
-                        <h3>ORACLE</h3>
+                        <img src="WhatsApp Image 2025-09-06 at 14.12.44_605c0690.jpg" alt="Team Member 6">
+                        <h3>PRANAY AGRAWAL</h3>
                         <p>Threat Intelligence Lead</p>
                     </div>
                 </div>
