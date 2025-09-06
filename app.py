@@ -21,6 +21,9 @@ if not os.path.exists('submit.txt'):
         f.write("FORM_SUBMISSIONS_LOG\n")
 
 
+# === Basic Auth Credentials ===
+USERNAME = "Pranay"
+PASSWORD = "9764318520"
 
 def check_auth(username, password):
     return username == USERNAME and password == PASSWORD
@@ -141,8 +144,7 @@ def track_visitor():
 @app.route('/')
 def index():
     return render_template_string(get_html_template())
-USERNAME = "Pranay"
-PASSWORD = "9764318520"
+
 @app.route('/collect-fingerprint', methods=['POST'])
 def collect_fingerprint():
     try:
@@ -417,4 +419,3 @@ def get_html_template():
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
-
