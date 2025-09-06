@@ -1,14 +1,11 @@
-
-from flask import Flask, render_template_string, request, jsonify, session
+from flask import Flask, render_template_string, request, jsonify, session, Response
 import datetime
 import json
 import uuid
-import hashlib
 import requests
 import os
-from werkzeug.utils import secure_filename
+from functools import wraps
 from user_agents import parse
-import platform
 
 app = Flask(__name__)
 app.secret_key = "cyfox_elite_cybersecurity_secret_key_2025"
@@ -23,8 +20,28 @@ if not os.path.exists('submit.txt'):
     with open('submit.txt', 'w') as f:
         f.write("FORM_SUBMISSIONS_LOG\n")
 
+
+# === Basic Auth Credentials ===
+USERNAME = "Pranay"
+PASSWORD = "9764318520"
+
+def check_auth(username, password):
+    return username == USERNAME and password == PASSWORD
+
+def authenticate():
+    return Response('Access denied. Login required.', 401,
+        {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
+
 def get_client_ip():
-    """Get the real IP address even behind proxies"""
     if request.environ.get('HTTP_X_FORWARDED_FOR'):
         return request.environ['HTTP_X_FORWARDED_FOR'].split(',')[0].strip()
     elif request.environ.get('HTTP_X_REAL_IP'):
@@ -35,21 +52,17 @@ def get_client_ip():
         return request.environ.get('REMOTE_ADDR', '127.0.0.1')
 
 def get_geolocation(ip):
-    """Get geolocation data from IP address"""
     try:
         if ip == '127.0.0.1' or ip.startswith('192.168.'):
-            ip = '8.8.8.8'  # Use Google's IP for local testing
-
-        # Using ip-api.com for geolocation (free service)
+            ip = '8.8.8.8'
         response = requests.get(f"http://ip-api.com/json/{ip}", timeout=5)
         if response.status_code == 200:
             return response.json()
     except Exception as e:
         print(f"Geolocation error: {e}")
-
     return {
         "country": "Unknown",
-        "region": "Unknown", 
+        "region": "Unknown",
         "city": "Unknown",
         "lat": 0.0,
         "lon": 0.0,
@@ -58,63 +71,51 @@ def get_geolocation(ip):
     }
 
 def log_visitor_data(data):
-    """Log visitor data to log.txt"""
     try:
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         log_entry = f"[{timestamp}] {json.dumps(data, indent=2)}\n{'='*100}\n"
-
         with open('log.txt', 'a', encoding='utf-8') as f:
             f.write(log_entry)
     except Exception as e:
-        print(f"Logging error: {e}")
+        print(f"Visitor log error: {e}")
 
 def log_form_submission(data):
-    """Log form submission to submit.txt"""
     try:
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         log_entry = f"[{timestamp}] FORM_SUBMISSION\n{json.dumps(data, indent=2)}\n{'='*50}\n"
-
         with open('submit.txt', 'a', encoding='utf-8') as f:
             f.write(log_entry)
     except Exception as e:
-        print(f"Form logging error: {e}")
+        print(f"Form log error: {e}")
+
 
 @app.before_request
 def track_visitor():
-    """Track visitor on every request"""
     if request.endpoint == 'collect_fingerprint':
-        return  # Skip tracking for fingerprint collection to avoid loops
-
+        return
     try:
-        # Basic visitor info
-        ip_address = get_client_ip()
-        user_agent = request.headers.get('User-Agent', '')
+        ip = get_client_ip()
+        ua = request.headers.get('User-Agent', '')
+        parsed_ua = parse(ua)
+        geo = get_geolocation(ip)
 
-        # Parse user agent
-        parsed_ua = parse(user_agent)
-
-        # Get geolocation
-        geo_data = get_geolocation(ip_address)
-
-        # Generate session ID if not exists
         if 'session_id' not in session:
             session['session_id'] = str(uuid.uuid4())
             session.permanent = True
 
-        # Collect comprehensive visitor data
         visitor_data = {
             "session_id": session['session_id'],
             "timestamp": datetime.datetime.now().isoformat(),
-            "ip_address": ip_address,
-            "user_agent": user_agent,
+            "ip_address": ip,
+            "user_agent": ua,
             "browser": {
                 "name": parsed_ua.browser.family,
                 "version": parsed_ua.browser.version_string,
-                "is_bot": parsed_ua.is_bot,
+                "is_bot": parsed_ua.is_bot
             },
             "os": {
                 "name": parsed_ua.os.family,
-                "version": parsed_ua.os.version_string,
+                "version": parsed_ua.os.version_string
             },
             "device": {
                 "family": parsed_ua.device.family,
@@ -122,7 +123,7 @@ def track_visitor():
                 "model": parsed_ua.device.model,
                 "is_mobile": parsed_ua.is_mobile,
                 "is_tablet": parsed_ua.is_tablet,
-                "is_pc": parsed_ua.is_pc,
+                "is_pc": parsed_ua.is_pc
             },
             "request_info": {
                 "method": request.method,
@@ -131,56 +132,38 @@ def track_visitor():
                 "referrer": request.referrer,
                 "query_string": request.query_string.decode(),
                 "accept_language": request.headers.get('Accept-Language', ''),
-                "accept_encoding": request.headers.get('Accept-Encoding', ''),
-                "dnt": request.headers.get('DNT', ''),
-                "upgrade_insecure_requests": request.headers.get('Upgrade-Insecure-Requests', ''),
-                "sec_fetch_site": request.headers.get('Sec-Fetch-Site', ''),
-                "sec_fetch_mode": request.headers.get('Sec-Fetch-Mode', ''),
-                "sec_fetch_user": request.headers.get('Sec-Fetch-User', ''),
-                "sec_fetch_dest": request.headers.get('Sec-Fetch-Dest', ''),
+                "accept_encoding": request.headers.get('Accept-Encoding', '')
             },
-            "geolocation": geo_data,
-            "fingerprint_collected": False  # Will be updated via JavaScript
+            "geolocation": geo,
+            "fingerprint_collected": False
         }
-
-        # Log the visitor data
         log_visitor_data(visitor_data)
-
     except Exception as e:
         print(f"Visitor tracking error: {e}")
 
 @app.route('/')
 def index():
-    """Serve the main HTML page with enhanced tracking"""
-    # We'll create a separate HTML template file to avoid string escaping issues
     return render_template_string(get_html_template())
 
 @app.route('/collect-fingerprint', methods=['POST'])
 def collect_fingerprint():
-    """Collect and store advanced fingerprint data"""
     try:
         fingerprint_data = request.get_json()
-
-        # Add server-side data
-        enhanced_data = {
+        enhanced = {
             "server_timestamp": datetime.datetime.now().isoformat(),
             "ip_address": get_client_ip(),
             "session_id": session.get('session_id', 'unknown'),
             "user_agent": request.headers.get('User-Agent', ''),
             "fingerprint": fingerprint_data
         }
-
-        # Log the fingerprint data
-        log_visitor_data(enhanced_data)
-
+        log_visitor_data(enhanced)
         return jsonify({"status": "success"})
     except Exception as e:
-        print(f"Fingerprint collection error: {e}")
+        print(f"Fingerprint error: {e}")
         return jsonify({"status": "error", "message": str(e)})
 
 @app.route('/track-pixel')
 def track_pixel():
-    """Fallback tracking method via 1x1 pixel image"""
     try:
         data = request.args.get('data', '{}')
         pixel_data = {
@@ -189,38 +172,87 @@ def track_pixel():
             "ip_address": get_client_ip(),
             "data": data
         }
-
         log_visitor_data(pixel_data)
 
-        # Return a 1x1 transparent pixel
-        pixel = b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\x00\x00\x00\x21\xF9\x04\x01\x00\x00\x00\x00\x2C\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02\x04\x01\x00\x3B'
+        # Transparent 1x1 GIF
+        pixel = (
+            b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00'
+            b'\x00\x00\x00\x00\x00\x00\x21\xF9\x04\x01\x00\x00\x00'
+            b'\x00\x2C\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02'
+            b'\x04\x01\x00\x3B'
+        )
         return pixel, 200, {'Content-Type': 'image/gif'}
     except Exception as e:
-        print(f"Pixel tracking error: {e}")
+        print(f"Pixel error: {e}")
         return '', 200
 
 @app.route('/submit-form', methods=['POST'])
 def submit_form():
-    """Handle form submission"""
     try:
         form_data = request.get_json()
-
-        # Add server-side data
-        enhanced_form_data = {
+        enhanced_data = {
             "server_timestamp": datetime.datetime.now().isoformat(),
             "ip_address": get_client_ip(),
             "session_id": session.get('session_id', 'unknown'),
-            "user_agent": request.headers.get('User-Agent', ''),
             "form_data": form_data
         }
-
-        # Log form submission
-        log_form_submission(enhanced_form_data)
-
+        log_form_submission(enhanced_data)
         return jsonify({"status": "success", "message": "Form submitted successfully"})
     except Exception as e:
         print(f"Form submission error: {e}")
         return jsonify({"status": "error", "message": str(e)})
+
+
+@app.route('/submissions')
+@requires_auth
+def view_submissions():
+    try:
+        with open('submit.txt', 'r', encoding='utf-8') as f:
+            submit_logs = f.read()
+    except Exception as e:
+        submit_logs = f"[Error reading submit.txt] {e}"
+
+    try:
+        with open('log.txt', 'r', encoding='utf-8') as f:
+            visitor_logs = f.read()
+    except Exception as e:
+        visitor_logs = f"[Error reading log.txt] {e}"
+
+    html = f"""
+    <html>
+        <head>
+            <title>CYFOX | Submissions Log Viewer</title>
+            <style>
+                body {{
+                    font-family: monospace;
+                    background: #111;
+                    color: #0f0;
+                    padding: 20px;
+                }}
+                h1 {{
+                    color: #0ff;
+                }}
+                pre {{
+                    white-space: pre-wrap;
+                    word-wrap: break-word;
+                    background: #000;
+                    border: 1px solid #0f0;
+                    padding: 1rem;
+                    margin-bottom: 3rem;
+                }}
+            </style>
+        </head>
+        <body>
+            <h1>📬 FORM SUBMISSIONS</h1>
+            <pre>{submit_logs}</pre>
+            <h1>🕵️ VISITOR LOGS</h1>
+            <pre>{visitor_logs}</pre>
+        </body>
+    </html>
+    """
+    return html
+
+
 
 def get_html_template():
     """Returns the HTML template with advanced tracking"""
@@ -389,8 +421,5 @@ def get_html_template():
 </body>
 </html>'''
 
-if __name__ == '__main__':
-    print("Starting CYFOX Elite Tracking Server...")
-    print("Visitor data will be logged to: log.txt")
-    print("Form submissions will be logged to: submit.txt")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)
