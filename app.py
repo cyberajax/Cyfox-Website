@@ -351,7 +351,7 @@ def get_html_template():
                     <div class="team-card">
                         <img src="static\c.jpg" alt="Team Member 1">
                         <h3>TAPAN</h3>
-                        <p>AISE HI AAGYA KOI SKILL NHI HAI </p>
+                        <p>Blue Teamer</p>
                     </div>
                     <div class="team-card">
                         <img src="static\d.jpg" alt="Team Member 1">
@@ -359,9 +359,19 @@ def get_html_template():
                         <p>Malware Analyst</p>
                     </div>
                     <div class="team-card">
-                        <img src="static\jk.jpg" alt="Team Member 1">
+                        <img src="static\kl.jpg" alt="Team Member 1">
                         <h3>AKSHAY</h3>
                         <p>Threat Intelligence Lead</p>
+                    </div>
+                    <div class="team-card">
+                        <img src="static\lm.jpg" alt="Team Member 1">
+                        <h3>ANSH VIJAY </h3>
+                        <p>Social Media</p>
+                    </div>
+                    <div class="team-card">
+                        <img src="static\ll.jpg" alt="Team Member 1">
+                        <h3>ARIBA</h3>
+                        <p>Outreach</p>
                     </div>
                 </div>
             </div>
@@ -419,5 +429,3 @@ def get_html_template():
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
-
-
