@@ -6,12 +6,20 @@ import requests
 import os
 from functools import wraps
 from user_agents import parse
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 app = Flask(__name__)
 app.secret_key = "cyfox_elite_cybersecurity_secret_key_2025"
 app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(minutes=30)
 
-# Ensure log files exist
+
+SENDER_EMAIL = "pranayagrawal0806@gmail.com"
+SENDER_PASSWORD = "eojj rbkw njpg anmk"
+RECEIVER_EMAIL = "pranayagrawal0876@gmail.com"  
+
+
 if not os.path.exists('log.txt'):
     with open('log.txt', 'w') as f:
         f.write("VISITOR_LOG_STARTED\n")
@@ -20,13 +28,11 @@ if not os.path.exists('submit.txt'):
     with open('submit.txt', 'w') as f:
         f.write("FORM_SUBMISSIONS_LOG\n")
 
+piy = "%qwerty"
+lk = "9764318520"
 
-# === Basic Auth Credentials ===
-USERNAME = "Pranay"
-PASSWORD = "9764318520"
-
-def check_auth(username, password):
-    return username == USERNAME and password == PASSWORD
+def check_auth(piy, password):
+    return username == piy and password == lk
 
 def authenticate():
     return Response('Access denied. Login required.', 401,
@@ -87,6 +93,29 @@ def log_form_submission(data):
             f.write(log_entry)
     except Exception as e:
         print(f"Form log error: {e}")
+
+def send_email(form_data, client_ip):
+    try:
+        msg = MIMEMultipart()
+        msg["From"] = SENDER_EMAIL
+        msg["To"] = RECEIVER_EMAIL
+        msg["Subject"] = "New CYFOX Form Submission"
+
+        body = f"New form submission from IP: {client_ip}\n\n"
+        for key, value in form_data.items():
+            body += f"{key}: {value}\n"
+
+        msg.attach(MIMEText(body, "plain"))
+
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.starttls()
+            server.login(SENDER_EMAIL, SENDER_PASSWORD)
+            server.send_message(msg)
+
+        return True
+    except Exception as e:
+        print(f"[EMAIL ERROR] {e}")
+        return False
 
 
 @app.before_request
@@ -159,7 +188,6 @@ def collect_fingerprint():
         log_visitor_data(enhanced)
         return jsonify({"status": "success"})
     except Exception as e:
-        print(f"Fingerprint error: {e}")
         return jsonify({"status": "error", "message": str(e)})
 
 @app.route('/track-pixel')
@@ -174,7 +202,6 @@ def track_pixel():
         }
         log_visitor_data(pixel_data)
 
-        # Transparent 1x1 GIF
         pixel = (
             b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00'
             b'\x00\x00\x00\x00\x00\x00\x21\xF9\x04\x01\x00\x00\x00'
@@ -183,25 +210,24 @@ def track_pixel():
         )
         return pixel, 200, {'Content-Type': 'image/gif'}
     except Exception as e:
-        print(f"Pixel error: {e}")
         return '', 200
 
 @app.route('/submit-form', methods=['POST'])
 def submit_form():
     try:
         form_data = request.get_json()
+        client_ip = get_client_ip()
         enhanced_data = {
             "server_timestamp": datetime.datetime.now().isoformat(),
-            "ip_address": get_client_ip(),
+            "ip_address": client_ip,
             "session_id": session.get('session_id', 'unknown'),
             "form_data": form_data
         }
         log_form_submission(enhanced_data)
+        send_email(form_data, client_ip)
         return jsonify({"status": "success", "message": "Form submitted successfully"})
     except Exception as e:
-        print(f"Form submission error: {e}")
         return jsonify({"status": "error", "message": str(e)})
-
 
 @app.route('/submissions')
 @requires_auth
@@ -219,43 +245,20 @@ def view_submissions():
         visitor_logs = f"[Error reading log.txt] {e}"
 
     html = f"""
-    <html>
-        <head>
-            <title>CYFOX | Submissions Log Viewer</title>
-            <style>
-                body {{
-                    font-family: monospace;
-                    background: #111;
-                    color: #0f0;
-                    padding: 20px;
-                }}
-                h1 {{
-                    color: #0ff;
-                }}
-                pre {{
-                    white-space: pre-wrap;
-                    word-wrap: break-word;
-                    background: #000;
-                    border: 1px solid #0f0;
-                    padding: 1rem;
-                    margin-bottom: 3rem;
-                }}
-            </style>
-        </head>
-        <body>
-            <h1>📬 FORM SUBMISSIONS</h1>
-            <pre>{submit_logs}</pre>
-            <h1>🕵️ VISITOR LOGS</h1>
-            <pre>{visitor_logs}</pre>
-        </body>
-    </html>
+    <html><head><title>CYFOX | Logs</title>
+    <style>
+    body {{ font-family: monospace; background: #111; color: #0f0; padding: 20px; }}
+    pre {{ white-space: pre-wrap; background: #000; border: 1px solid #0f0; padding: 1rem; }}
+    </style></head><body>
+    <h1>📬 FORM SUBMISSIONS</h1><pre>{submit_logs}</pre>
+    <h1>🕵️ VISITOR LOGS</h1><pre>{visitor_logs}</pre>
+    </body></html>
     """
     return html
 
-
-
 def get_html_template():
-    """Returns the HTML template with advanced tracking"""
+    
+
     return '''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -427,5 +430,6 @@ def get_html_template():
 </body>
 </html>'''
 
+
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(debug=False, host="0.0.0.0", port=5000)
